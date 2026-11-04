@@ -33,10 +33,13 @@ export function LiveMap({ people }) {
   );
 }
 
-export function RouteMap({ points, visits = [] }) {
+export function RouteMap({ points = [], visits = [], liveTarget = null }) {
   const line = points.map((p) => [p.lat, p.lng]);
   const col = { assigned: "#f59e0b", visited: "#16a34a", missed: "#dc2626" };
   const all = [...line, ...visits.map((v) => [v.lat, v.lng])];
+  
+  const lastPoint = line.length > 0 ? line[line.length - 1] : null;
+
   return (
     <Base points={all}>
       {visits.map((v) => (
@@ -44,9 +47,14 @@ export function RouteMap({ points, visits = [] }) {
           <Popup>{v.clientName} ({v.status})</Popup>
         </Circle>
       ))}
-      {line.length > 1 && <Polyline positions={line} pathOptions={{ color: "#2563eb" }} />}
-      {line.length > 0 && <CircleMarker center={line[0]} radius={7} pathOptions={{ color: "#16a34a" }}><Popup>Start</Popup></CircleMarker>}
-      {line.length > 1 && <CircleMarker center={line[line.length - 1]} radius={7} pathOptions={{ color: "#dc2626" }}><Popup>Latest</Popup></CircleMarker>}
+      {line.length > 1 && <Polyline positions={line} pathOptions={{ color: "#2563eb", weight: 4 }} />}
+      
+      {lastPoint && liveTarget && (
+        <Polyline positions={[lastPoint, [liveTarget.lat, liveTarget.lng]]} pathOptions={{ color: "#f59e0b", dashArray: "5, 10", weight: 3 }} />
+      )}
+
+      {line.length > 0 && <CircleMarker center={line[0]} radius={7} pathOptions={{ color: "#16a34a" }}><Popup>Shift Started</Popup></CircleMarker>}
+      {lastPoint && <CircleMarker center={lastPoint} radius={8} pathOptions={{ color: "#2563eb", fillOpacity: 1 }}><Popup>You are here</Popup></CircleMarker>}
     </Base>
   );
 }
