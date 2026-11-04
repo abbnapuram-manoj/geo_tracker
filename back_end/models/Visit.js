@@ -1,14 +1,12 @@
-let mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-let visitSchema = new mongoose.Schema({
-    clientName: { type: String, required: true },
-    targetLat: { type: Number, required: true },
-    targetLng: { type: Number, required: true },
-    assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    checkInLat: { type: Number },
-    checkInLng: { type: Number },
-    distanceTraveled: { type: Number, default: 0 },
-    status: { type: String, enum: ['PENDING', 'GEO_VERIFIED'], default: 'PENDING' }
-}, { timestamps: true });
-
-module.exports = mongoose.model('Visit', visitSchema);
+module.exports = mongoose.model("Visit", new mongoose.Schema({
+  employeeId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  clientName: { type: String, required: true },
+  lat: { type: Number, required: true },
+  lng: { type: Number, required: true },
+  radius: { type: Number, default: 100 },
+  date: { type: Date, required: true },
+  status: { type: String, enum: ["assigned", "visited", "missed"], default: "assigned" },
+  visitedAt: Date,
+}, { timestamps: true }));
